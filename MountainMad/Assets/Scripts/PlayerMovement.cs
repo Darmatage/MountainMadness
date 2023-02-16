@@ -6,25 +6,23 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
     private Rigidbody2D rb;
+    public float moveSpeed = 100f;
     Vector2 moveAmount;
 
     private void Awake() {
         rb = GetComponent<Rigidbody2D>();
     }
 
-    public void OnMove(InputAction.CallbackContext context)
+    public void OnMove(InputValue value)
     {
         // read the value for the "move" action each event call
-        moveAmount = context.ReadValue<Vector2>();
+        moveAmount = value.Get<Vector2>();
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        // Get player inputs
-        // move_direction = Input.GetAxis("Horizontal");
-
         // Move player from inputs
-        rb.velocity = moveAmount;
+        rb.MovePosition(rb.position + moveAmount * moveSpeed * Time.fixedDeltaTime);
     }
-}
+} 

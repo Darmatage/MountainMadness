@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.U2D;
@@ -8,8 +7,8 @@ using UnityEngine.U2D;
 public class SkierRotator : MonoBehaviour
 {
     public GameObject slope;
+    public float dt_epsilon = 0.1f;
     public int numSplinePoints;
-    public float tValue_display;
 
     private Spline s;
     private Transform t;
@@ -25,18 +24,21 @@ public class SkierRotator : MonoBehaviour
     private void FixedUpdate()
     {
         int firstIndex = getLeftPoint();
+        Vector2 firstPosition = s.GetPosition(firstIndex);
+        Vector2 secondPosition = s.GetPosition(firstIndex + 1);
 
         Vector2[] handlePositions = {
-            s.GetPosition(firstIndex),
-            s.GetRightTangent(firstIndex),
-            s.GetLeftTangent(firstIndex + 1),
-            s.GetPosition(firstIndex + 1)
+            firstPosition,
+            firstPosition + (Vector2)s.GetRightTangent(firstIndex),
+            secondPosition + (Vector2)s.GetLeftTangent(firstIndex + 1),
+            secondPosition
         };
         float tValue = (t.position.x - handlePositions[0].x) /
                        (handlePositions[3].x - handlePositions[0].x);
+        //tValue = Mathf.Clamp(tValue, 0.1f, 0.9f);
 
-        int tangentSlope = slopeFromHandles(handlePositions, tValue);
-        t.rotation = Quaternion.Euler(0, 0, math.atan(tangentSlope) * (180 / math.PI));
+        float tangentSlope = slopeFromHandles(handlePositions, tValue);
+        t.rotation = Quaternion.Euler(0, 0, 5 + Mathf.Atan(tangentSlope) * (180 / Mathf.PI));
     }
 
     private int getLeftPoint()
@@ -56,14 +58,16 @@ public class SkierRotator : MonoBehaviour
         return resIndex;
     }
 
-    private int slopeFromHandles(Vector2[] positions, float t)
+    private float slopeFromHandles(Vector2[] positions, float t)
     {
-        // TODO: derive dy/dx from these terms ==>
-        Vector2 term1 = math.pow(1 - t, 3) * (Vector2)(positions[0]);
-        Vector2 term2 = 3 * t * math.pow(1 - t, 2) * (Vector2)(positions[1]);
-        Vector2 term3 = 3 * math.pow(t, 2) * (1 - t) * (Vector2)(positions[2]);
-        Vector2 term4 = math.pow(t, 3) * (Vector2)(positions[3]);
+        float dx = parameterize(positions[0].x, positions[1].x, positions[2].x, positions[3].x, t);
+        float dy = parameterize(positions[0].y, positions[1].y, positions[2].y, positions[3].y, t);
+        return dy / dx;
+    }
 
-        return 0;
+    private float parameterize(float A, float B, float C, float D, float t)
+    {
+        return 3 * ((D - (3 * C) + (3 * B) - A) * Mathf.Pow(t, 2) +
+               ((2 * C) - (4 * B) + (2 * A)) * t + B - A);
     }
 }

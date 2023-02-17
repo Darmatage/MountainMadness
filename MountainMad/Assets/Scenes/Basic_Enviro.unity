@@ -133,7 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 90501158}
   - component: {fileID: 90501159}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ski_art
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -395,14 +395,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 278975645}
-  m_LocalRotation: {x: 0.025960404, y: 0.0046593375, z: -0.17659454, w: 0.98393023}
-  m_LocalPosition: {x: 69.5, y: -33, z: -1.5}
+  m_LocalRotation: {x: 0, y: 0, z: -0.0039182696, w: 0.9999924}
+  m_LocalPosition: {x: 118.2, y: -11.3, z: -4.8}
   m_LocalScale: {x: 400, y: 12.4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 7
-  m_LocalEulerAnglesHint: {x: 3.023, y: 0, z: -20.35}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -0.449}
 --- !u!61 &278975648
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -469,7 +469,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 317132495}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
@@ -501,7 +501,7 @@ GameObject:
   - component: {fileID: 363865591}
   - component: {fileID: 363865594}
   - component: {fileID: 363865595}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -523,7 +523,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0
-  m_GravityScale: 50
+  m_GravityScale: 9.8
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -584,7 +584,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96dcd412a0503469191571f13b35d3be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 10
+  move_speed: 5
+  jump_force: 20
+  ground_point: {fileID: 278975647}
+  whatIsGround:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!114 &363865595
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -598,7 +603,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Actions: {fileID: -944628639613478452, guid: e6cc188f4f2a04133a19d1941c6b3df0, type: 3}
-  m_NotificationBehavior: 0
+  m_NotificationBehavior: 2
   m_UIInputModule: {fileID: 0}
   m_DeviceLostEvent:
     m_PersistentCalls:
@@ -609,7 +614,87 @@ MonoBehaviour:
   m_ControlsChangedEvent:
     m_PersistentCalls:
       m_Calls: []
-  m_ActionEvents: []
+  m_ActionEvents:
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 363865594}
+        m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
+        m_MethodName: Move
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: d7f720a7-7ba8-44c9-a418-e8530d302458
+    m_ActionName: Player/Move[/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 12e791e7-6896-479d-a7aa-2de8bbf85a43
+    m_ActionName: Player/Look[/Mouse/delta,/Pen/delta]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: caa9eb3b-392a-4a93-abd1-3612eaf5a4b6
+    m_ActionName: Player/Fire[/Mouse/leftButton]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 8cc11dc0-f713-462d-b0ff-444eaf76f1c0
+    m_ActionName: UI/Navigate[/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 7171b8ba-14bc-4aca-8bca-8e94d855f6be
+    m_ActionName: UI/Submit[/Keyboard/enter]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: ba81d87f-2865-423f-be25-c6add2a11c56
+    m_ActionName: UI/Cancel[/Keyboard/escape]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 064991df-8a38-4b5c-89ab-ed1259a7c048
+    m_ActionName: UI/Point[/Mouse/position,/Pen/position]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 97c88bd7-1b6f-434b-8fc9-c6e7541c3a99
+    m_ActionName: UI/Click[/Mouse/leftButton,/Pen/tip]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 4d497615-9881-4469-8223-73800be34852
+    m_ActionName: UI/ScrollWheel[/Mouse/scroll]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 9f03e3c9-66de-4061-bf45-ed20ade0ae76
+    m_ActionName: UI/MiddleClick[/Mouse/middleButton]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 34aa37a9-1e93-48c9-a1aa-c323c4143bd9
+    m_ActionName: UI/RightClick[/Mouse/rightButton]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: ccd09fb7-5f7a-4644-9170-9031d5558297
+    m_ActionName: UI/TrackedDevicePosition
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: a4640089-69ea-48ed-8b02-e7fdb9257ecd
+    m_ActionName: UI/TrackedDeviceOrientation
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 363865594}
+        m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
+        m_MethodName: Jump
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 3dc833e7-4cc8-44f1-8fce-3aaf40015de6
+    m_ActionName: Player/Jump[/Keyboard/space]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -625,7 +710,7 @@ GameObject:
   m_Component:
   - component: {fileID: 951754648}
   - component: {fileID: 951754647}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: player_art
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1094,7 +1179,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 666a0e65b531248309301512711448b2, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.2300641, g: 0.8233421, b: 0.8867924, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

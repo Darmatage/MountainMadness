@@ -1,47 +1,47 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.U2D;
 
 public class SkierRotator : MonoBehaviour
 {
-    public GameObject slope;
-    public float dt_epsilon = 0.1f;
-    public int numSplinePoints;
+    public GameObject slope; // sprite shape path to target
+    private int numSplinePoints;
 
     private Spline s;
     private Transform t;
 
     private void Start()
     {
-        SpriteShapeController splineComp = slope.GetComponent<SpriteShapeController>();
+        s = slope.GetComponent<SpriteShapeController>().spline;
         t = GetComponent<Transform>();
-        s = splineComp.spline;
         numSplinePoints = s.GetPointCount();
     }
 
     private void FixedUpdate()
     {
-        int firstIndex = getLeftPoint();
+        // find the nearest bezier point to the LEFT of the skier
+        int firstIndex = GetLeftPoint();
         Vector2 firstPosition = s.GetPosition(firstIndex);
         Vector2 secondPosition = s.GetPosition(firstIndex + 1);
 
+        // create a list of bezier handle positions
+        // => these are equivalent to A, B, C, and D, in newton's cubic bezier formula
         Vector2[] handlePositions = {
             firstPosition,
             firstPosition + (Vector2)s.GetRightTangent(firstIndex),
             secondPosition + (Vector2)s.GetLeftTangent(firstIndex + 1),
             secondPosition
         };
+
+        // calculate t (to sample the active bezier curve)
         float tValue = (t.position.x - handlePositions[0].x) /
                        (handlePositions[3].x - handlePositions[0].x);
-        //tValue = Mathf.Clamp(tValue, 0.1f, 0.9f);
 
-        float tangentSlope = slopeFromHandles(handlePositions, tValue);
+        // calculate the slope by sampling the curve, then convert to a rotation
+        float tangentSlope = SlopeFromHandles(handlePositions, tValue);
         t.rotation = Quaternion.Euler(0, 0, 5 + Mathf.Atan(tangentSlope) * (180 / Mathf.PI));
     }
 
-    private int getLeftPoint()
+    private int GetLeftPoint()
     {
         float resDistance = 999f;
         int resIndex = 0;
@@ -58,15 +58,17 @@ public class SkierRotator : MonoBehaviour
         return resIndex;
     }
 
-    private float slopeFromHandles(Vector2[] positions, float t)
+    private float SlopeFromHandles(Vector2[] positions, float t)
     {
-        float dx = parameterize(positions[0].x, positions[1].x, positions[2].x, positions[3].x, t);
-        float dy = parameterize(positions[0].y, positions[1].y, positions[2].y, positions[3].y, t);
+        float dx = Parameterize(positions[0].x, positions[1].x, positions[2].x, positions[3].x, t);
+        float dy = Parameterize(positions[0].y, positions[1].y, positions[2].y, positions[3].y, t);
         return dy / dx;
     }
 
-    private float parameterize(float A, float B, float C, float D, float t)
+    private float Parameterize(float A, float B, float C, float D, float t)
     {
+        // https://en.wikipedia.org/wiki/Bezier_curve#Derivative
+        // => optimized with a little algebra
         return 3 * ((D - (3 * C) + (3 * B) - A) * Mathf.Pow(t, 2) +
                ((2 * C) - (4 * B) + (2 * A)) * t + B - A);
     }

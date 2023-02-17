@@ -17,7 +17,7 @@ public class SkiController : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D c) { isGrounded = true; }
     private void OnCollisionExit2D(Collision2D c) { isGrounded = false; }
 
-    private void FixedUpdate()
+    private void FixedUpdate() // Add force based on input x-axis. Only affect if skier is grounded
     {
         if (isGrounded)
         {
